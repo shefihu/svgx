@@ -64,12 +64,13 @@ export function BulkDownloadPanel({ files, className = '' }: BulkDownloadPanelPr
           .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
           .join('');
 
-      case 'camelCase':
+      case 'camelCase': {
         const pascal = baseName
           .split(/[-_\s]/)
           .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
           .join('');
         return pascal.charAt(0).toLowerCase() + pascal.slice(1);
+      }
 
       case 'original':
       default:
@@ -212,7 +213,7 @@ Generated with [SVGX](https://github.com/yourusername/svgx) - SVG Optimization &
               </h3>
               <button
                 onClick={toggleAllFormats}
-                className="text-sm text-blue-400 hover:text-blue-300 transition-colors"
+                className="text-sm text-primary hover:text-primary/80 transition-colors"
               >
                 {formats.every((f) => f.enabled) ? 'Deselect All' : 'Select All'}
               </button>
@@ -226,7 +227,7 @@ Generated with [SVGX](https://github.com/yourusername/svgx) - SVG Optimization &
                     flex items-center gap-3 p-3 rounded border cursor-pointer transition-all
                     ${
                       format.enabled
-                        ? 'bg-blue-500/10 border-blue-500/50'
+                        ? 'bg-primary/10 border-primary/50'
                         : 'bg-white/5 border-white/10 hover:border-white/20'
                     }
                   `}
@@ -242,7 +243,7 @@ Generated with [SVGX](https://github.com/yourusername/svgx) - SVG Optimization &
                       w-5 h-5 rounded border-2 flex items-center justify-center transition-all
                       ${
                         format.enabled
-                          ? 'bg-blue-500 border-blue-500'
+                          ? 'bg-primary border-primary'
                           : 'border-white/30'
                       }
                     `}
@@ -269,7 +270,7 @@ Generated with [SVGX](https://github.com/yourusername/svgx) - SVG Optimization &
                       flex items-center gap-3 p-3 rounded border cursor-pointer transition-all
                       ${
                         namingConvention === convention
-                          ? 'bg-blue-500/10 border-blue-500/50'
+                          ? 'bg-primary/10 border-primary/50'
                           : 'bg-white/5 border-white/10 hover:border-white/20'
                       }
                     `}
@@ -286,7 +287,7 @@ Generated with [SVGX](https://github.com/yourusername/svgx) - SVG Optimization &
                         w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all
                         ${
                           namingConvention === convention
-                            ? 'bg-blue-500 border-blue-500'
+                            ? 'bg-primary border-primary'
                             : 'border-white/30'
                         }
                       `}
@@ -333,7 +334,7 @@ Generated with [SVGX](https://github.com/yourusername/svgx) - SVG Optimization &
               ${
                 isGenerating || enabledFormats.length === 0
                   ? 'bg-white/10 text-white/40 cursor-not-allowed'
-                  : 'bg-blue-600 hover:bg-blue-700 text-white'
+                  : 'bg-primary hover:bg-primary/90 text-white'
               }
             `}
           >
@@ -355,7 +356,7 @@ Generated with [SVGX](https://github.com/yourusername/svgx) - SVG Optimization &
             <div className="mt-4">
               <div className="h-2 bg-white/10 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-blue-500 transition-all duration-300"
+                  className="h-full bg-primary transition-all duration-300"
                   style={{ width: `${progress}%` }}
                 />
               </div>

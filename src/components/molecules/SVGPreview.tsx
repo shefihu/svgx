@@ -19,7 +19,7 @@ export function SVGPreview({
           {title}
         </div>
       )}
-      <div className="flex-1 flex items-center justify-center p-8 bg-black">
+      <div className="flex-1 flex items-center justify-center p-4 md:p-8 bg-black">
         {svgContent ? (
           <div
             className="max-w-full max-h-full"

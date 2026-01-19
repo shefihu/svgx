@@ -19,6 +19,7 @@ interface PreviewPanelProps {
   bulkFiles?: UploadedFile[];
   isBulkMode?: boolean;
   onComponentNameChange?: (name: string) => void;
+  onBulkFilesUpdate?: (files: UploadedFile[]) => void;
 }
 
 type OutputMode =
@@ -30,7 +31,7 @@ type OutputMode =
   | 'nextjs'
   | 'bulk-download';
 
-export function PreviewPanel({ svgContent, componentName, bulkFiles = [], isBulkMode = false, onComponentNameChange }: PreviewPanelProps) {
+export function PreviewPanel({ svgContent, componentName, bulkFiles = [], isBulkMode = false, onComponentNameChange, onBulkFilesUpdate }: PreviewPanelProps) {
   const [activeTab, setActiveTab] = useState<OutputMode>('preview');
 
   const hasBulkFiles = bulkFiles.length > 0;
@@ -61,7 +62,7 @@ export function PreviewPanel({ svgContent, componentName, bulkFiles = [], isBulk
             value={componentName ?? ''}
             onChange={handleComponentNameChange}
             placeholder="Icon"
-            className="flex-1 px-3 py-1.5 bg-white/5 border border-white/10 rounded text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+            className="flex-1 px-3 py-1.5 bg-white/5 border border-white/10 rounded text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
           />
         </div>
       )}
@@ -85,7 +86,7 @@ export function PreviewPanel({ svgContent, componentName, bulkFiles = [], isBulk
 
         <TabsContent value="preview" className="overflow-hidden">
           {hasBulkFiles && isBulkMode ? (
-            <BulkPreviewGrid files={bulkFiles} outputMode="preview" className="h-full" />
+            <BulkPreviewGrid files={bulkFiles} outputMode="preview" onFilesUpdated={onBulkFilesUpdate} className="h-full" />
           ) : (
             <SVGPreview svgContent={svgContent} className="h-full" />
           )}
@@ -93,7 +94,7 @@ export function PreviewPanel({ svgContent, componentName, bulkFiles = [], isBulk
 
         <TabsContent value="jsx" className="overflow-hidden">
           {hasBulkFiles && isBulkMode ? (
-            <BulkPreviewGrid files={bulkFiles} outputMode="jsx" className="h-full" />
+            <BulkPreviewGrid files={bulkFiles} outputMode="jsx" onFilesUpdated={onBulkFilesUpdate} className="h-full" />
           ) : (
             <CodeDisplay code={jsxOutput} language="jsx" className="h-full" />
           )}
@@ -101,7 +102,7 @@ export function PreviewPanel({ svgContent, componentName, bulkFiles = [], isBulk
 
         <TabsContent value="html" className="overflow-hidden">
           {hasBulkFiles && isBulkMode ? (
-            <BulkPreviewGrid files={bulkFiles} outputMode="html" className="h-full" />
+            <BulkPreviewGrid files={bulkFiles} outputMode="html" onFilesUpdated={onBulkFilesUpdate} className="h-full" />
           ) : (
             <CodeDisplay code={htmlOutput} language="html" className="h-full" />
           )}
@@ -109,7 +110,7 @@ export function PreviewPanel({ svgContent, componentName, bulkFiles = [], isBulk
 
         <TabsContent value="react-js" className="overflow-hidden">
           {hasBulkFiles && isBulkMode ? (
-            <BulkPreviewGrid files={bulkFiles} outputMode="react-js" className="h-full" />
+            <BulkPreviewGrid files={bulkFiles} outputMode="react-js" onFilesUpdated={onBulkFilesUpdate} className="h-full" />
           ) : (
             <CodeDisplay
               code={reactJSOutput}
@@ -122,7 +123,7 @@ export function PreviewPanel({ svgContent, componentName, bulkFiles = [], isBulk
 
         <TabsContent value="react-ts" className="overflow-hidden">
           {hasBulkFiles && isBulkMode ? (
-            <BulkPreviewGrid files={bulkFiles} outputMode="react-ts" className="h-full" />
+            <BulkPreviewGrid files={bulkFiles} outputMode="react-ts" onFilesUpdated={onBulkFilesUpdate} className="h-full" />
           ) : (
             <CodeDisplay
               code={reactTSOutput}
@@ -135,7 +136,7 @@ export function PreviewPanel({ svgContent, componentName, bulkFiles = [], isBulk
 
         <TabsContent value="nextjs" className="overflow-hidden">
           {hasBulkFiles && isBulkMode ? (
-            <BulkPreviewGrid files={bulkFiles} outputMode="nextjs" className="h-full" />
+            <BulkPreviewGrid files={bulkFiles} outputMode="nextjs" onFilesUpdated={onBulkFilesUpdate} className="h-full" />
           ) : (
             <CodeDisplay
               code={nextJSOutput}

@@ -9,7 +9,8 @@ export function MainLayout() {
   const [componentName, setComponentName] = useState('Icon');
   const [bulkFiles, setBulkFiles] = useState<UploadedFile[]>([]);
   const [showBulkUpload, setShowBulkUpload] = useState(false);
-  const [showAutoSwitchNotification, setShowAutoSwitchNotification] = useState(false);
+  const [showAutoSwitchNotification, setShowAutoSwitchNotification] =
+    useState(false);
 
   const handleSVGChange = (svg: string) => {
     setSvgContent(svg);
@@ -34,14 +35,20 @@ export function MainLayout() {
   };
 
   const handleMultipleSVGsDetected = (svgs: string[]) => {
-    console.log('[MainLayout] handleMultipleSVGsDetected called with', svgs.length, 'SVGs');
+    console.log(
+      '[MainLayout] handleMultipleSVGsDetected called with',
+      svgs.length,
+      'SVGs'
+    );
     console.log('[MainLayout] Current showBulkUpload:', showBulkUpload);
 
     // Convert SVG strings to UploadedFile format
     const startIndex = bulkFiles.length > 0 ? bulkFiles.length : 0;
     const newFiles: UploadedFile[] = svgs.map((svg, index) => ({
       id: `auto-detected-${Date.now()}-${index}`,
-      file: new File([svg], `pasted-icon-${startIndex + index + 1}.svg`, { type: 'image/svg+xml' }),
+      file: new File([svg], `pasted-icon-${startIndex + index + 1}.svg`, {
+        type: 'image/svg+xml',
+      }),
       content: svg,
       status: 'success' as const,
     }));
@@ -65,7 +72,9 @@ export function MainLayout() {
         setShowAutoSwitchNotification(false);
       }, 3000);
     } else {
-      console.log('[MainLayout] Already in bulk mode, not showing notification');
+      console.log(
+        '[MainLayout] Already in bulk mode, not showing notification'
+      );
     }
   };
 
@@ -74,7 +83,7 @@ export function MainLayout() {
       {/* Auto-Switch Notification */}
       {showAutoSwitchNotification && (
         <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50 animate-[slideDown_0.3s_ease-out]">
-          <div className="bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3">
+          <div className="bg-primary text-primary-foreground px-6 py-3 rounded-lg shadow-lg flex items-center gap-3">
             <CheckCircle className="w-5 h-5" />
             <span className="font-medium">
               {bulkFiles.length} SVGs detected - Switched to Bulk Mode
@@ -83,10 +92,12 @@ export function MainLayout() {
         </div>
       )}
 
-      <header className="border-b border-white/10 px-6 py-4">
+      <header className="border-b border-white/10 px-4 md:px-6 py-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">SVGX</h1>
+            <h1 className="text-3xl font-black tracking-tighter select-none">
+              SVGX
+            </h1>
             <p className="text-sm text-white/60 mt-1">
               SVG Optimization & Conversion Tool
             </p>
@@ -97,7 +108,7 @@ export function MainLayout() {
               flex items-center gap-2 px-4 py-2 rounded border transition-all
               ${
                 showBulkUpload
-                  ? 'bg-blue-500/20 border-blue-500/50 text-blue-300'
+                  ? 'bg-primary/20 border-primary/50 text-primary'
                   : 'bg-white/5 border-white/10 hover:border-white/30 text-white/80'
               }
             `}
@@ -107,7 +118,7 @@ export function MainLayout() {
               {showBulkUpload ? 'Single Mode' : 'Bulk Mode'}
             </span>
             {bulkFiles.length > 0 && (
-              <span className="ml-1 px-2 py-0.5 bg-blue-500 text-white text-xs rounded-full">
+              <span className="ml-1 px-2 py-0.5 bg-primary text-primary-foreground text-xs rounded-full">
                 {bulkFiles.length}
               </span>
             )}
@@ -115,11 +126,11 @@ export function MainLayout() {
         </div>
       </header>
 
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden">
         {showBulkUpload ? (
           // Bulk Upload Mode
           <>
-            <div className="w-1/2 border-r border-white/10 flex flex-col overflow-hidden">
+            <div className="w-full md:w-1/2 border-b md:border-b-0 md:border-r border-white/10 flex flex-col overflow-hidden min-h-[500px] md:min-h-0 shrink-0">
               <div className="p-6 border-b border-white/10">
                 <h2 className="text-lg font-semibold mb-2">Bulk Upload</h2>
                 <p className="text-sm text-white/60">
@@ -134,26 +145,27 @@ export function MainLayout() {
               </div>
             </div>
 
-            <div className="w-1/2 flex flex-col">
+            <div className="w-full md:w-1/2 flex flex-col min-h-[500px] md:min-h-0 shrink-0">
               <PreviewPanel
                 svgContent={svgContent}
                 componentName={componentName}
                 bulkFiles={bulkFiles}
                 isBulkMode={true}
+                onBulkFilesUpdate={setBulkFiles}
               />
             </div>
           </>
         ) : (
           // Single File Mode
           <>
-            <div className="w-1/2 border-r border-white/10 flex flex-col">
+            <div className="w-full md:w-1/2 border-b md:border-b-0 md:border-r border-white/10 flex flex-col min-h-[500px] md:min-h-0 shrink-0">
               <EditorPanel
                 onSVGChange={handleSVGChange}
                 onMultipleSVGsDetected={handleMultipleSVGsDetected}
               />
             </div>
 
-            <div className="w-1/2 flex flex-col">
+            <div className="w-full md:w-1/2 flex flex-col min-h-[500px] md:min-h-0 shrink-0">
               <PreviewPanel
                 svgContent={svgContent}
                 componentName={componentName}

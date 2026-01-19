@@ -2,7 +2,7 @@ import { forwardRef } from 'react';
 import type { HTMLAttributes } from 'react';
 import { cn } from '@/lib/utils';
 
-export interface PanelProps extends HTMLAttributes<HTMLDivElement> {}
+export type PanelProps = HTMLAttributes<HTMLDivElement>;
 
 const Panel = forwardRef<HTMLDivElement, PanelProps>(
   ({ className, ...props }, ref) => {

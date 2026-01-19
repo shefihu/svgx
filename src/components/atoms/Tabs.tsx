@@ -42,7 +42,7 @@ export function TabsList({ children, className, ...props }: HTMLAttributes<HTMLD
   return (
     <div
       className={cn(
-        'flex items-center border-b border-white/10 bg-black',
+        'flex items-center border-b border-white/10 bg-black w-full overflow-x-auto',
         className
       )}
       {...props}

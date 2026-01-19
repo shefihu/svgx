@@ -23,7 +23,7 @@ export function formatXml(xml: string, indent = 2): string {
       pad -= 1;
     }
     // Self-closing tags or closing tags on same line
-    else if (node.match(/^<\w[^>]*[^\/]>.*<\/\w/)) {
+    else if (node.match(/^<\w[^>]*[^/]>.*<\/\w/)) {
       indent = 0;
     }
     // Opening tags
