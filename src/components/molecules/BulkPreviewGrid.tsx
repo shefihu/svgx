@@ -83,8 +83,8 @@ export function BulkPreviewGrid({
   };
 
   return (
-    <div className={`p-6 overflow-y-auto ${className}`}>
-      <div className="grid grid-cols-2 gap-4">
+    <div className={`p-6 overflow-y-auto custom-scrollbar ${className}`}>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {successfulFiles.map((file) => {
           const isSelected = selectedFileId === file.id;
           const isCopied = copiedFileId === file.id;
@@ -97,29 +97,29 @@ export function BulkPreviewGrid({
                 relative border rounded-lg p-4 cursor-pointer transition-all group
                 ${
                   isSelected
-                    ? 'border-blue-500 bg-blue-500/10'
-                    : 'border-white/10 hover:border-white/30 bg-white/5'
+                    ? 'border-blue-500 bg-blue-500/10 shadow-lg shadow-blue-500/20'
+                    : 'border-white/10 hover:border-white/30 bg-white/5 hover:bg-white/10'
                 }
               `}
             >
               {/* Preview */}
-              <div className="aspect-square bg-white/5 rounded flex items-center justify-center mb-3 overflow-hidden">
+              <div className="aspect-square bg-black/30 border border-white/5 rounded-lg flex items-center justify-center mb-3 overflow-hidden">
                 {outputMode === 'preview' ? (
                   <div
                     dangerouslySetInnerHTML={{ __html: file.content }}
-                    className="w-3/4 h-3/4 flex items-center justify-center"
+                    className="w-4/5 h-4/5 flex items-center justify-center [&>svg]:max-w-full [&>svg]:max-h-full"
                   />
                 ) : (
-                  <div className="w-full h-full p-2 overflow-hidden">
-                    <pre className="text-[8px] text-white/60 font-mono leading-tight overflow-hidden">
-                      {getConvertedContent(file).substring(0, 200)}...
+                  <div className="w-full h-full p-3 overflow-hidden">
+                    <pre className="text-[9px] text-white/60 font-mono leading-snug overflow-hidden">
+                      {getConvertedContent(file).substring(0, 250)}...
                     </pre>
                   </div>
                 )}
               </div>
 
               {/* File Name */}
-              <p className="text-sm text-white/90 truncate mb-3">
+              <p className="text-sm text-white/90 truncate mb-3 font-medium" title={file.file.name}>
                 {file.file.name}
               </p>
 
@@ -131,22 +131,22 @@ export function BulkPreviewGrid({
                     handleCopy(file);
                   }}
                   className={`
-                    flex-1 py-2 px-3 rounded text-xs font-medium transition-all flex items-center justify-center gap-1
+                    flex-1 py-2.5 px-3 rounded-lg text-xs font-medium transition-all flex items-center justify-center gap-1.5
                     ${
                       isCopied
-                        ? 'bg-green-500 text-white'
-                        : 'bg-white/10 hover:bg-white/20 text-white/80'
+                        ? 'bg-green-500 text-white shadow-sm'
+                        : 'bg-white/10 hover:bg-white/20 text-white/90 hover:text-white'
                     }
                   `}
                 >
                   {isCopied ? (
                     <>
-                      <Check className="w-3 h-3" />
+                      <Check className="w-3.5 h-3.5" />
                       Copied
                     </>
                   ) : (
                     <>
-                      <Copy className="w-3 h-3" />
+                      <Copy className="w-3.5 h-3.5" />
                       Copy
                     </>
                   )}
@@ -157,16 +157,16 @@ export function BulkPreviewGrid({
                     e.stopPropagation();
                     handleDownload(file);
                   }}
-                  className="flex-1 py-2 px-3 rounded text-xs font-medium bg-white/10 hover:bg-white/20 text-white/80 transition-all flex items-center justify-center gap-1"
+                  className="flex-1 py-2.5 px-3 rounded-lg text-xs font-medium bg-white/10 hover:bg-white/20 text-white/90 hover:text-white transition-all flex items-center justify-center gap-1.5"
                 >
-                  <Download className="w-3 h-3" />
+                  <Download className="w-3.5 h-3.5" />
                   Download
                 </button>
               </div>
 
               {/* Selected Indicator */}
               {isSelected && (
-                <div className="absolute top-2 right-2 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                <div className="absolute top-3 right-3 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center shadow-lg">
                   <Check className="w-4 h-4 text-white" />
                 </div>
               )}

@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from 'react';
-import type { DragEvent, ChangeEvent } from 'react';
-import { Upload, X, FileCheck, AlertCircle, Clipboard } from 'lucide-react';
+import type { DragEvent, ChangeEvent, KeyboardEvent } from 'react';
+import { Upload, X, FileCheck, AlertCircle, Clipboard, Edit2, Search } from 'lucide-react';
 
 export interface UploadedFile {
   id: string;
@@ -28,12 +28,24 @@ export function BulkFileUpload({
 }: BulkFileUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>(files);
+  const [editingFileId, setEditingFileId] = useState<string | null>(null);
+  const [editingFileName, setEditingFileName] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const editInputRef = useRef<HTMLInputElement>(null);
 
   // Sync internal state with prop changes
   useEffect(() => {
     setUploadedFiles(files);
   }, [files]);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Focus edit input when editing starts
+  useEffect(() => {
+    if (editingFileId && editInputRef.current) {
+      editInputRef.current.focus();
+      editInputRef.current.select();
+    }
+  }, [editingFileId]);
 
   const validateFile = (file: File): { valid: boolean; error?: string } => {
     if (!file.type.includes('svg') && !file.name.endsWith('.svg')) {
@@ -155,7 +167,55 @@ export function BulkFileUpload({
   const handleClearAll = () => {
     setUploadedFiles([]);
     onFilesAdded?.([]);
+    setSearchQuery('');
   };
+
+  const startEditing = (file: UploadedFile) => {
+    setEditingFileId(file.id);
+    setEditingFileName(file.file.name);
+  };
+
+  const cancelEditing = () => {
+    setEditingFileId(null);
+    setEditingFileName('');
+  };
+
+  const saveFileName = (fileId: string) => {
+    if (!editingFileName.trim()) {
+      cancelEditing();
+      return;
+    }
+
+    // Ensure .svg extension
+    let newName = editingFileName.trim();
+    if (!newName.toLowerCase().endsWith('.svg')) {
+      newName += '.svg';
+    }
+
+    const updatedFiles = uploadedFiles.map((f) => {
+      if (f.id === fileId) {
+        const newFile = new File([f.file], newName, { type: f.file.type });
+        return { ...f, file: newFile };
+      }
+      return f;
+    });
+
+    setUploadedFiles(updatedFiles);
+    onFilesAdded?.(updatedFiles);
+    cancelEditing();
+  };
+
+  const handleEditKeyDown = (e: KeyboardEvent<HTMLInputElement>, fileId: string) => {
+    if (e.key === 'Enter') {
+      saveFileName(fileId);
+    } else if (e.key === 'Escape') {
+      cancelEditing();
+    }
+  };
+
+  const filteredFiles = uploadedFiles.filter((file) =>
+    file.file.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const detectAndSplitSVGs = (text: string): string[] => {
     // Match all SVG tags (including nested content)
@@ -212,17 +272,35 @@ export function BulkFileUpload({
 
   return (
     <div className={className}>
+      {/* Stats Summary */}
+      {uploadedFiles.length > 0 && (
+        <div className="mb-4 grid grid-cols-3 gap-3">
+          <div className="bg-white/5 border border-white/10 rounded-lg p-3 text-center">
+            <div className="text-2xl font-bold text-white/90">{uploadedFiles.length}</div>
+            <div className="text-xs text-white/60 mt-1">Total Files</div>
+          </div>
+          <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3 text-center">
+            <div className="text-2xl font-bold text-green-400">{successCount}</div>
+            <div className="text-xs text-green-300/80 mt-1">Ready</div>
+          </div>
+          <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 text-center">
+            <div className="text-2xl font-bold text-red-400">{errorCount}</div>
+            <div className="text-xs text-red-300/80 mt-1">Errors</div>
+          </div>
+        </div>
+      )}
+
       {/* Paste Button */}
       <div className="mb-4">
         <button
           onClick={handlePaste}
-          className="w-full py-3 px-4 bg-white/5 border border-white/20 hover:border-white/40 hover:bg-white/10 rounded transition-all flex items-center justify-center gap-2 text-white/80"
+          className="w-full py-3 px-4 bg-white/5 border border-white/20 hover:border-white/40 hover:bg-white/10 rounded-lg transition-all flex items-center justify-center gap-2 text-white/80"
         >
           <Clipboard className="w-4 h-4" />
           <span className="text-sm font-medium">Paste SVGs from Clipboard</span>
         </button>
         <p className="text-xs text-white/40 mt-2 text-center">
-          Paste one or multiple SVG codes and they'll be automatically detected
+          Paste one or multiple SVG codes - they'll be automatically detected
         </p>
       </div>
 
@@ -269,80 +347,117 @@ export function BulkFileUpload({
       {/* File List */}
       {uploadedFiles.length > 0 && (
         <div className="mt-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-4 text-sm">
-              <span className="text-white/80">
-                {uploadedFiles.length} file{uploadedFiles.length !== 1 ? 's' : ''}
-              </span>
-              {successCount > 0 && (
-                <span className="text-green-400 flex items-center gap-1">
-                  <FileCheck className="w-4 h-4" />
-                  {successCount} ready
-                </span>
-              )}
-              {errorCount > 0 && (
-                <span className="text-red-400 flex items-center gap-1">
-                  <AlertCircle className="w-4 h-4" />
-                  {errorCount} failed
-                </span>
-              )}
+          {/* Search and Actions */}
+          <div className="mb-4 space-y-3">
+            {/* Search Bar */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search files..."
+                className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-blue-500/50 transition-colors"
+              />
             </div>
 
-            <button
-              onClick={handleClearAll}
-              className="text-sm text-white/60 hover:text-white transition-colors"
-            >
-              Clear all
-            </button>
+            {/* Action Bar */}
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-white/60">
+                {searchQuery ? `${filteredFiles.length} of ${uploadedFiles.length}` : `${uploadedFiles.length} file${uploadedFiles.length !== 1 ? 's' : ''}`}
+              </span>
+              <button
+                onClick={handleClearAll}
+                className="text-sm text-red-400 hover:text-red-300 transition-colors"
+              >
+                Clear all
+              </button>
+            </div>
           </div>
 
-          <div className="space-y-2 max-h-64 overflow-y-auto">
-            {uploadedFiles.map((file) => (
-              <div
-                key={file.id}
-                className={`
-                  flex items-center justify-between p-3 rounded border
-                  ${
-                    file.status === 'error'
-                      ? 'bg-red-500/10 border-red-500/30'
-                      : file.status === 'success'
-                      ? 'bg-white/5 border-white/10'
-                      : 'bg-white/5 border-white/10 animate-pulse'
-                  }
-                `}
-              >
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm text-white/90 truncate">
-                    {file.file.name}
-                  </p>
-                  {file.error && (
-                    <p className="text-xs text-red-400 mt-1">{file.error}</p>
-                  )}
-                  <p className="text-xs text-white/50 mt-1">
-                    {(file.file.size / 1024).toFixed(2)} KB
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-2 ml-4">
-                  {file.status === 'success' && (
-                    <FileCheck className="w-4 h-4 text-green-400" />
-                  )}
-                  {file.status === 'error' && (
-                    <AlertCircle className="w-4 h-4 text-red-400" />
-                  )}
-                  {file.status === 'processing' && (
-                    <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
-                  )}
-
-                  <button
-                    onClick={() => handleRemoveFile(file.id)}
-                    className="p-1 hover:bg-white/10 rounded transition-colors"
-                  >
-                    <X className="w-4 h-4 text-white/60" />
-                  </button>
-                </div>
+          {/* Files */}
+          <div className="space-y-2 max-h-96 overflow-y-auto pr-2 custom-scrollbar">
+            {filteredFiles.length === 0 ? (
+              <div className="text-center py-8 text-white/40 text-sm">
+                No files match your search
               </div>
-            ))}
+            ) : (
+              filteredFiles.map((file) => (
+                <div
+                  key={file.id}
+                  className={`
+                    group relative p-3 rounded-lg border transition-all
+                    ${
+                      file.status === 'error'
+                        ? 'bg-red-500/10 border-red-500/30'
+                        : file.status === 'success'
+                        ? 'bg-white/5 border-white/10 hover:border-white/20 hover:bg-white/10'
+                        : 'bg-white/5 border-white/10 animate-pulse'
+                    }
+                  `}
+                >
+                  <div className="flex items-start gap-3">
+                    {/* Status Icon */}
+                    <div className="shrink-0 mt-0.5">
+                      {file.status === 'success' && (
+                        <FileCheck className="w-5 h-5 text-green-400" />
+                      )}
+                      {file.status === 'error' && (
+                        <AlertCircle className="w-5 h-5 text-red-400" />
+                      )}
+                      {file.status === 'processing' && (
+                        <div className="w-5 h-5 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
+                      )}
+                    </div>
+
+                    {/* File Info */}
+                    <div className="flex-1 min-w-0">
+                      {editingFileId === file.id ? (
+                        <input
+                          ref={editInputRef}
+                          type="text"
+                          value={editingFileName}
+                          onChange={(e) => setEditingFileName(e.target.value)}
+                          onKeyDown={(e) => handleEditKeyDown(e, file.id)}
+                          onBlur={() => saveFileName(file.id)}
+                          className="w-full px-2 py-1 bg-white/10 border border-blue-500 rounded text-sm text-white focus:outline-none"
+                        />
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm text-white/90 truncate font-medium">
+                            {file.file.name}
+                          </p>
+                          {file.status === 'success' && (
+                            <button
+                              onClick={() => startEditing(file)}
+                              className="opacity-0 group-hover:opacity-100 p-1 hover:bg-white/10 rounded transition-all"
+                              title="Rename file"
+                            >
+                              <Edit2 className="w-3 h-3 text-white/60" />
+                            </button>
+                          )}
+                        </div>
+                      )}
+                      {file.error && (
+                        <p className="text-xs text-red-400 mt-1">{file.error}</p>
+                      )}
+                      <p className="text-xs text-white/50 mt-1">
+                        {(file.file.size / 1024).toFixed(1)} KB
+                      </p>
+                    </div>
+
+                    {/* Remove Button */}
+                    <button
+                      onClick={() => handleRemoveFile(file.id)}
+                      className="shrink-0 p-1.5 hover:bg-red-500/20 rounded transition-colors"
+                      title="Remove file"
+                    >
+                      <X className="w-4 h-4 text-white/60 hover:text-red-400" />
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       )}
