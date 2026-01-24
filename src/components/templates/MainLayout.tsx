@@ -28,8 +28,11 @@ export function MainLayout() {
     const newMode = !showBulkUpload;
     setShowBulkUpload(newMode);
 
-    // Clear bulk files when switching from bulk to single mode
-    if (!newMode) {
+    if (newMode) {
+      // Switching to bulk mode - clear single mode content
+      setSvgContent('');
+    } else {
+      // Switching to single mode - clear bulk files
       setBulkFiles([]);
     }
   };

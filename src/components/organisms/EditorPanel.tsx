@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { ChangeEvent, ClipboardEvent } from 'react';
 import { Panel, CodeEditor } from '@/components/atoms';
-import { FileUpload, ActionBar } from '@/components/molecules';
+import { FileUpload } from '@/components/molecules';
 import { detectAndSplitSVGs } from '@/lib/utils';
 
 interface EditorPanelProps {
@@ -84,24 +84,6 @@ export function EditorPanel({
     }
   };
 
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(svgCode);
-    } catch (err) {
-      console.error('Failed to copy:', err);
-    }
-  };
-
-  const handleDownload = () => {
-    const blob = new Blob([svgCode], { type: 'image/svg+xml' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'exported.svg';
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
   return (
     <Panel className="h-full">
       <div className="p-4 border-b border-white/10">
@@ -126,8 +108,6 @@ export function EditorPanel({
           className="border-0 border-b"
         />
       </div>
-
-      <ActionBar onCopy={handleCopy} onDownload={handleDownload} />
     </Panel>
   );
 }
