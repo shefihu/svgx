@@ -1,39 +1,67 @@
 import { useState } from 'react';
 import type { ChangeEvent, ClipboardEvent } from 'react';
-import { Panel, CodeEditor } from '@/components/atoms';
+import { Sparkles } from 'lucide-react';
+import { Panel, CodeEditor, Button } from '@/components/atoms';
 import { FileUpload } from '@/components/molecules';
 import { detectAndSplitSVGs } from '@/lib/utils';
+import { optimizeSVG, formatBytes } from '@/lib/optimizer';
+import type { OptimizationResult } from '@/lib/types';
 
 interface EditorPanelProps {
   onSVGChange?: (svg: string) => void;
   onMultipleSVGsDetected?: (svgs: string[]) => void;
+  onOptimizationComplete?: (result: OptimizationResult) => void;
 }
 
 export function EditorPanel({
   onSVGChange,
   onMultipleSVGsDetected,
+  onOptimizationComplete,
 }: EditorPanelProps) {
   const [svgCode, setSvgCode] = useState('');
+  const [isOptimized, setIsOptimized] = useState(false);
 
   const handleCodeChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
     setSvgCode(value);
     onSVGChange?.(value);
+    // Reset optimization status when user manually edits
+    setIsOptimized(false);
   };
 
   const handleNativePaste = (e: ClipboardEvent<HTMLTextAreaElement>) => {
     const pastedText = e.clipboardData.getData('text');
-    console.log('[EditorPanel] Native paste detected, text length:', pastedText.length);
+    const target = e.currentTarget;
+    const hasSelection = target.selectionStart !== target.selectionEnd;
 
-    // Check if combining existing content with new paste creates multiple SVGs
-    const combinedContent = svgCode.trim() ? `${svgCode}\n${pastedText}` : pastedText;
+    console.log(
+      '[EditorPanel] Native paste detected, text length:',
+      pastedText.length,
+      'Has selection:',
+      hasSelection
+    );
+
+    // If user has selected text, they're replacing it, not appending
+    // So only check the pasted content for multiple SVGs
+    // Otherwise, check if combining existing content with new paste creates multiple SVGs
+    const combinedContent = hasSelection
+      ? pastedText
+      : svgCode.trim()
+        ? `${svgCode}\n${pastedText}`
+        : pastedText;
+
     const svgs = detectAndSplitSVGs(combinedContent);
-    console.log('[EditorPanel] Detected SVGs in combined content:', svgs.length);
+    console.log(
+      '[EditorPanel] Detected SVGs in combined content:',
+      svgs.length
+    );
 
     if (svgs.length > 1) {
       // Multiple SVGs detected - prevent default paste and switch to bulk mode
       e.preventDefault();
-      console.log('[EditorPanel] Multiple SVGs detected! Calling onMultipleSVGsDetected');
+      console.log(
+        '[EditorPanel] Multiple SVGs detected! Calling onMultipleSVGsDetected'
+      );
       onMultipleSVGsDetected?.(svgs);
     }
     // If single SVG, let the default paste behavior happen (will trigger handleCodeChange)
@@ -54,6 +82,7 @@ export function EditorPanel({
         // Single SVG - proceed normally
         setSvgCode(content);
         onSVGChange?.(content);
+        setIsOptimized(false);
       }
     };
     reader.readAsText(file);
@@ -64,31 +93,75 @@ export function EditorPanel({
       const text = await navigator.clipboard.readText();
       console.log('[EditorPanel] Pasted text length:', text.length);
 
-      // Check if combining existing content with new paste creates multiple SVGs
-      const combinedContent = svgCode.trim() ? `${svgCode}\n${text}` : text;
-      const svgs = detectAndSplitSVGs(combinedContent);
-      console.log('[EditorPanel] Detected SVGs in combined content:', svgs.length);
+      // Check if the pasted text itself contains multiple SVGs
+      const svgs = detectAndSplitSVGs(text);
+      console.log('[EditorPanel] Detected SVGs in pasted text:', svgs.length);
 
       if (svgs.length > 1) {
-        // Multiple SVGs detected (either in paste alone or combined with existing) - switch to bulk mode
-        console.log('[EditorPanel] Multiple SVGs detected! Calling onMultipleSVGsDetected');
+        // Multiple SVGs detected - switch to bulk mode
+        console.log(
+          '[EditorPanel] Multiple SVGs detected! Calling onMultipleSVGsDetected'
+        );
         onMultipleSVGsDetected?.(svgs);
       } else {
         // Single SVG or plain text - proceed normally
         console.log('[EditorPanel] Single SVG or text, proceeding normally');
         setSvgCode(text);
         onSVGChange?.(text);
+        setIsOptimized(false);
       }
     } catch (err) {
       console.error('Failed to read clipboard:', err);
     }
   };
 
+  const handleOptimize = () => {
+    if (!svgCode.trim() || isOptimized) return;
+
+    try {
+      const result = optimizeSVG(svgCode);
+      console.log(
+        '[EditorPanel] Optimization complete:',
+        formatBytes(result.originalSize),
+        '→',
+        formatBytes(result.optimizedSize),
+        `(${result.reduction}% reduction)`
+      );
+
+      // Update the editor with optimized SVG
+      setSvgCode(result.optimized);
+      onSVGChange?.(result.optimized);
+
+      // Mark as optimized
+      setIsOptimized(true);
+
+      // Pass optimization result to parent
+      onOptimizationComplete?.(result);
+    } catch (err) {
+      console.error('Failed to optimize SVG:', err);
+    }
+  };
+
   return (
     <Panel className="h-full">
       <div className="p-4 border-b border-white/10">
-        <h2 className="text-lg font-semibold mb-4">SVG Input</h2>
-        <FileUpload onFileSelect={handleFileSelect} />
+        <div className="flex justify-between">
+          <h2 className="text-lg font-semibold mb-4">SVG Input</h2>
+          <div className="flex gap-2">
+            <FileUpload onFileSelect={handleFileSelect} />
+            <Button
+              variant="default"
+              onClick={handleOptimize}
+              disabled={!svgCode.trim() || isOptimized}
+              title={isOptimized ? 'Already optimized' : 'Optimize SVG'}
+            >
+              <Sparkles className="w-4 h-4" />
+              <span className="text-sm">
+                {isOptimized ? 'Optimized' : 'Optimize'}
+              </span>
+            </Button>
+          </div>
+        </div>
         <div className="mt-4">
           <button
             onClick={handlePaste}

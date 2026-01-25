@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { EditorPanel, PreviewPanel } from '@/components/organisms';
 import { BulkFileUpload } from '@/components/molecules/BulkFileUpload';
 import type { UploadedFile } from '@/components/molecules/BulkFileUpload';
+import { OptimizationMetrics } from '@/components/molecules';
 import { Package, CheckCircle } from 'lucide-react';
+import type { OptimizationResult } from '@/lib/types';
 
 export function MainLayout() {
   const [svgContent, setSvgContent] = useState('');
@@ -11,6 +13,8 @@ export function MainLayout() {
   const [showBulkUpload, setShowBulkUpload] = useState(false);
   const [showAutoSwitchNotification, setShowAutoSwitchNotification] =
     useState(false);
+  const [optimizationResult, setOptimizationResult] =
+    useState<OptimizationResult | null>(null);
 
   const handleSVGChange = (svg: string) => {
     setSvgContent(svg);
@@ -31,6 +35,7 @@ export function MainLayout() {
     if (newMode) {
       // Switching to bulk mode - clear single mode content
       setSvgContent('');
+      setOptimizationResult(null);
     } else {
       // Switching to single mode - clear bulk files
       setBulkFiles([]);
@@ -81,6 +86,10 @@ export function MainLayout() {
     }
   };
 
+  const handleOptimizationComplete = (result: OptimizationResult) => {
+    setOptimizationResult(result);
+  };
+
   return (
     <div className="h-screen w-screen bg-black text-white flex flex-col overflow-hidden relative">
       {/* Auto-Switch Notification */}
@@ -129,6 +138,9 @@ export function MainLayout() {
         </div>
       </header>
 
+      {/* Optimization Metrics Header - Only shown in single mode when optimization is complete */}
+      {!showBulkUpload && <OptimizationMetrics result={optimizationResult} />}
+
       <div className="flex-1 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden">
         {showBulkUpload ? (
           // Bulk Upload Mode
@@ -165,6 +177,7 @@ export function MainLayout() {
               <EditorPanel
                 onSVGChange={handleSVGChange}
                 onMultipleSVGsDetected={handleMultipleSVGsDetected}
+                onOptimizationComplete={handleOptimizationComplete}
               />
             </div>
 

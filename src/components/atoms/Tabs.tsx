@@ -31,14 +31,18 @@ export function Tabs({
 }: TabsProps) {
   return (
     <TabsContext.Provider value={{ value, onValueChange }}>
-      <div className={cn('w-full', className)} {...props}>
+      <div className={cn(className)} {...props}>
         {children}
       </div>
     </TabsContext.Provider>
   );
 }
 
-export function TabsList({ children, className, ...props }: HTMLAttributes<HTMLDivElement>) {
+export function TabsList({
+  children,
+  className,
+  ...props
+}: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       className={cn(

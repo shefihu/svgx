@@ -37,9 +37,9 @@ export function FileUpload({
         onChange={handleFileChange}
         className="hidden"
       />
-      <Button variant="outline" onClick={handleClick} className="w-full">
+      <Button variant="outline" onClick={handleClick}>
         <Upload className="w-4 h-4" />
-        Upload SVG File
+        Upload
       </Button>
     </div>
   );
