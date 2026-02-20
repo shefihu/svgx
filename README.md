@@ -105,17 +105,20 @@ npm run preview
 ## Features
 
 ### SVG Input
+
 - Paste SVG code into the editor
 - Upload `.svg` files
 - Auto-detect valid SVG
 - Error handling for invalid SVG
 
 ### Live SVG Visualization
+
 - Real-time SVG preview
 - Side-by-side before/after views
 - Instant updates on changes
 
 ### SVG ↔ JSX Conversion
+
 - **SVG → JSX:**
   - Convert `class` → `className`
   - CamelCase all attributes
@@ -126,6 +129,7 @@ npm run preview
 ### Framework Export Presets
 
 #### React (JavaScript)
+
 ```jsx
 export const Icon = ({ className, width = 24, height = 24 }) => (
   <svg className={className} width={width} height={height} ...>
@@ -135,6 +139,7 @@ export const Icon = ({ className, width = 24, height = 24 }) => (
 ```
 
 #### React (TypeScript)
+
 ```tsx
 interface IconProps {
   className?: string;
@@ -150,6 +155,7 @@ export const Icon = ({ className, width = 24, height = 24 }: IconProps) => (
 ```
 
 #### Next.js
+
 ```tsx
 'use client';
 
@@ -228,15 +234,6 @@ npm run build
 # Preview production build
 npm run preview
 
-# Format code with Prettier
-npm run format
-
-# Check formatting
-npm run format:check
-
-# Lint code
-npm run lint
-```
 
 ### Code Style
 
@@ -298,3 +295,4 @@ This project is licensed under the MIT License.
 
 **Made with ❤️ for developers who work with SVGs**
 # svgx
+```
