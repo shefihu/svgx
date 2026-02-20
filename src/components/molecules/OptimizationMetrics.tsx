@@ -10,7 +10,7 @@ export function OptimizationMetrics({ result }: OptimizationMetricsProps) {
   if (!result) return null;
 
   return (
-    <div className="border-b border-white/10 bg-white/[0.02]">
+    <div className="border-b border-white/10 bg-white/2">
       <div className="px-4 md:px-6 py-4">
         <div className="flex items-center justify-center gap-8 md:gap-12">
           {/* Original Size */}

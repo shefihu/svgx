@@ -227,7 +227,10 @@ export function PreviewPanel({
               <label className="text-sm font-medium text-white/70 whitespace-nowrap">
                 Format
               </label>
-              <Select value={format} onValueChange={(value) => setFormat(value as FormatMode)}>
+              <Select
+                value={format}
+                onValueChange={(value) => setFormat(value as FormatMode)}
+              >
                 <SelectTrigger size="sm" className="w-35">
                   <SelectValue />
                 </SelectTrigger>
@@ -273,7 +276,10 @@ export function PreviewPanel({
               <label className="text-sm font-medium text-white/70 whitespace-nowrap">
                 Format
               </label>
-              <Select value={format} onValueChange={(value) => setFormat(value as FormatMode)}>
+              <Select
+                value={format}
+                onValueChange={(value) => setFormat(value as FormatMode)}
+              >
                 <SelectTrigger size="sm" className="w-35">
                   <SelectValue />
                 </SelectTrigger>

@@ -2,6 +2,7 @@
 
 > A developer-focused web application for optimizing SVG files, converting SVG ↔ JSX, and exporting framework-ready components with real-time visual preview.
 
+[![Version](https://img.shields.io/badge/version-0.1.0--beta-orange)](https://github.com/yourusername/svgx/releases)
 [![Built with React](https://img.shields.io/badge/React-19.2.0-61dafb?logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178c6?logo=typescript)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-7.x-646cff?logo=vite)](https://vitejs.dev/)
@@ -15,9 +16,11 @@ SVGX helps frontend engineers, React developers, and UI engineers quickly optimi
 ### Key Features
 
 - **Live SVG Preview** — Real-time before/after visualization
-- **SVG Optimization** — Reduce file size with safe defaults
+- **SVG Optimization** — Reduce file size with SVGO, with size metrics
 - **SVG ↔ JSX Conversion** — Instant attribute conversion
-- **Framework Export Presets** — React, Next.js, and HTML ready components
+- **Framework Export Presets** — React (JS/TS), Next.js, and HTML components
+- **Bulk Upload & Export** — Process multiple SVGs at once, download as ZIP
+- **Batch Rename** — Rename files with kebab-case, PascalCase, or camelCase conventions
 - **Copy & Download** — Export optimized SVGs with one click
 - **Developer-First UI** — Clean, minimal interface with monospace code display
 
@@ -35,15 +38,18 @@ Developers frequently:
 - Need to ship the **same SVGs across web and native platforms** (React, mobile, etc.)
 - Work with **large icon sets** that require repetitive renaming and exporting
 
-Existing tools (e.g., SVGOMG, svgviewer.dev):
+Existing tools each solve only part of the problem:
 
-- Focus primarily on **single-file optimization**
-- Are not React- or framework-aware by default
-- Do not support **bulk workflows**
-- Do not generate **semantic, code-ready component names**
-- Do not provide **cross-platform framework outputs**
+| Feature                    | SVGOMG | SVGR     | svg2jsx | **SVGX** |
+| -------------------------- | ------ | -------- | ------- | -------- |
+| SVG optimization           | ✅     | ❌       | ❌      | ✅       |
+| Multi-framework export     | ❌     | ✅       | Partial | ✅       |
+| Bulk processing            | ❌     | CLI only | ❌      | ✅       |
+| Live visual preview        | ✅     | ❌       | ❌      | ✅       |
+| Batch rename & conventions | ❌     | ❌       | ❌      | ✅       |
+| No install / browser-based | ✅     | ❌       | ✅      | ✅       |
 
-As a result, developers rely on multiple tools and manual steps, increasing the risk of visual bugs and inconsistencies.
+SVGX is the only browser-based tool that combines optimization, multi-framework export, live preview, and bulk processing in a single workflow — no CLI setup, no context switching.
 
 ---
 
@@ -57,7 +63,7 @@ As a result, developers rely on multiple tools and manual steps, increasing the 
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/svgx.git
+git clone https://github.com/shefihu/svgx
 cd svgx
 
 # Install dependencies
@@ -248,19 +254,20 @@ All code is automatically formatted on save if you have Prettier configured in y
 
 ## Roadmap
 
-### MVP v1 (Current)
+### v0.1.0-beta (Current)
 - ✅ SVG input (paste/upload)
 - ✅ Live SVG preview
 - ✅ SVG ↔ JSX conversion
-- ✅ Framework export presets (React, Next.js, HTML)
+- ✅ Framework export presets (React JS/TS, Next.js, HTML)
+- ✅ SVG optimization with SVGO + metrics
+- ✅ Bulk upload and export (ZIP download)
+- ✅ Batch rename with naming conventions
 - ✅ Copy & download functionality
 - ⏳ AI-assisted component naming (In Progress)
 
-### Future Features
-- SVG optimization with SVGO
-- Bulk upload and export
+### v0.2.0 (Planned)
 - Additional framework support (Flutter, SwiftUI, Jetpack Compose)
-- File size metrics and analytics
+- File size analytics dashboard
 - Advanced SVG editing capabilities
 
 ---
@@ -270,9 +277,9 @@ All code is automatically formatted on save if you have Prettier configured in y
 Contributions are welcome! Please feel free to submit a Pull Request.
 
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
+2. Create your feature branch (`git checkout -b feature/RockstarFeature`)
+3. Commit your changes (`git commit -m 'Add some RockstarFeature'`)
+4. Push to the branch (`git push origin feature/RockstarFeature`)
 5. Open a Pull Request
 
 ---
