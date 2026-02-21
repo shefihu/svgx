@@ -11,15 +11,11 @@ export function cn(...inputs: ClassValue[]) {
  */
 export function detectAndSplitSVGs(text: string): string[] {
   if (!text.trim()) {
-    console.log('[detectAndSplitSVGs] Empty text received');
     return [];
   }
 
-  console.log('[detectAndSplitSVGs] Input text length:', text.length);
-
   // Split by </svg> and filter out empty strings
   const parts = text.split('</svg>').filter((part) => part.trim());
-  console.log('[detectAndSplitSVGs] Found parts after split:', parts.length);
 
   // Reconstruct each SVG by adding back the closing tag
   const svgs = parts
@@ -36,7 +32,6 @@ export function detectAndSplitSVGs(text: string): string[] {
     })
     .filter((svg): svg is string => svg !== null && svg.includes('<svg'));
 
-  console.log('[detectAndSplitSVGs] Detected SVGs count:', svgs.length);
   return svgs;
 }
 

@@ -4,7 +4,7 @@ import { Sparkles } from 'lucide-react';
 import { Panel, CodeEditor, Button } from '@/components/atoms';
 import { FileUpload } from '@/components/molecules';
 import { detectAndSplitSVGs } from '@/lib/utils';
-import { optimizeSVG, formatBytes } from '@/lib/optimizer';
+import { optimizeSVG } from '@/lib/optimizer';
 import type { OptimizationResult } from '@/lib/types';
 
 interface EditorPanelProps {
@@ -34,13 +34,6 @@ export function EditorPanel({
     const target = e.currentTarget;
     const hasSelection = target.selectionStart !== target.selectionEnd;
 
-    console.log(
-      '[EditorPanel] Native paste detected, text length:',
-      pastedText.length,
-      'Has selection:',
-      hasSelection
-    );
-
     // If user has selected text, they're replacing it, not appending
     // So only check the pasted content for multiple SVGs
     // Otherwise, check if combining existing content with new paste creates multiple SVGs
@@ -51,17 +44,10 @@ export function EditorPanel({
         : pastedText;
 
     const svgs = detectAndSplitSVGs(combinedContent);
-    console.log(
-      '[EditorPanel] Detected SVGs in combined content:',
-      svgs.length
-    );
 
     if (svgs.length > 1) {
       // Multiple SVGs detected - prevent default paste and switch to bulk mode
       e.preventDefault();
-      console.log(
-        '[EditorPanel] Multiple SVGs detected! Calling onMultipleSVGsDetected'
-      );
       onMultipleSVGsDetected?.(svgs);
     }
     // If single SVG, let the default paste behavior happen (will trigger handleCodeChange)
@@ -91,21 +77,15 @@ export function EditorPanel({
   const handlePaste = async () => {
     try {
       const text = await navigator.clipboard.readText();
-      console.log('[EditorPanel] Pasted text length:', text.length);
 
       // Check if the pasted text itself contains multiple SVGs
       const svgs = detectAndSplitSVGs(text);
-      console.log('[EditorPanel] Detected SVGs in pasted text:', svgs.length);
 
       if (svgs.length > 1) {
         // Multiple SVGs detected - switch to bulk mode
-        console.log(
-          '[EditorPanel] Multiple SVGs detected! Calling onMultipleSVGsDetected'
-        );
         onMultipleSVGsDetected?.(svgs);
       } else {
         // Single SVG or plain text - proceed normally
-        console.log('[EditorPanel] Single SVG or text, proceeding normally');
         setSvgCode(text);
         onSVGChange?.(text);
         setIsOptimized(false);
@@ -120,13 +100,6 @@ export function EditorPanel({
 
     try {
       const result = optimizeSVG(svgCode);
-      console.log(
-        '[EditorPanel] Optimization complete:',
-        formatBytes(result.originalSize),
-        '→',
-        formatBytes(result.optimizedSize),
-        `(${result.reduction}% reduction)`
-      );
 
       // Update the editor with optimized SVG
       setSvgCode(result.optimized);

@@ -43,13 +43,6 @@ export function MainLayout() {
   };
 
   const handleMultipleSVGsDetected = (svgs: string[]) => {
-    console.log(
-      '[MainLayout] handleMultipleSVGsDetected called with',
-      svgs.length,
-      'SVGs'
-    );
-    console.log('[MainLayout] Current showBulkUpload:', showBulkUpload);
-
     // Convert SVG strings to UploadedFile format
     const startIndex = bulkFiles.length > 0 ? bulkFiles.length : 0;
     const newFiles: UploadedFile[] = svgs.map((svg, index) => ({
@@ -61,17 +54,11 @@ export function MainLayout() {
       status: 'success' as const,
     }));
 
-    console.log('[MainLayout] Created', newFiles.length, 'new files');
-
     // Add to existing bulk files
-    setBulkFiles((prev) => {
-      console.log('[MainLayout] Adding files, prev count:', prev.length);
-      return [...prev, ...newFiles];
-    });
+    setBulkFiles((prev) => [...prev, ...newFiles]);
 
     // Switch to bulk mode if not already in it
     if (!showBulkUpload) {
-      console.log('[MainLayout] Switching to bulk mode!');
       setShowBulkUpload(true);
 
       // Show notification only when auto-switching
@@ -79,10 +66,6 @@ export function MainLayout() {
       setTimeout(() => {
         setShowAutoSwitchNotification(false);
       }, 3000);
-    } else {
-      console.log(
-        '[MainLayout] Already in bulk mode, not showing notification'
-      );
     }
   };
 
