@@ -3,9 +3,9 @@
 > A developer-focused web application for optimizing SVG files, converting SVG ↔ JSX, and exporting framework-ready components with real-time visual preview.
 
 [![Version](https://img.shields.io/badge/version-0.1.0--beta-orange)](https://github.com/yourusername/svgx/releases)
-[![Built with React](https://img.shields.io/badge/React-19.2.0-61dafb?logo=react)](https://react.dev/)
+[![Built with Next.js](https://img.shields.io/badge/Next.js-15.x-000000?logo=next.js)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19.2.0-61dafb?logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178c6?logo=typescript)](https://www.typescriptlang.org/)
-[![Vite](https://img.shields.io/badge/Vite-7.x-646cff?logo=vite)](https://vitejs.dev/)
 
 ---
 
@@ -73,13 +73,13 @@ npm install
 npm run dev
 ```
 
-The app will be available at `http://localhost:5173`
+The app will be available at `http://localhost:3000`
 
 ### Build for Production
 
 ```bash
 npm run build
-npm run preview
+npm run start
 ```
 
 ---
@@ -183,8 +183,7 @@ export function Icon({ className, size = 24 }: IconProps) {
 
 ## Tech Stack
 
-- **Framework:** React 19.2.0
-- **Build Tool:** Vite 7.x
+- **Framework:** Next.js 15.x (App Router)
 - **Language:** TypeScript 5.x
 - **Styling:** Tailwind CSS v4
 - **Syntax Highlighting:** Prism.js
@@ -198,20 +197,28 @@ export function Icon({ className, size = 24 }: IconProps) {
 ```
 svgx/
 ├── src/
+│   ├── app/
+│   │   ├── layout.tsx      # Root layout (fonts, metadata)
+│   │   └── page.tsx        # Home page entry point
 │   ├── components/
 │   │   ├── atoms/          # Basic UI components (Button, Panel, Tabs, etc.)
 │   │   ├── molecules/      # Composite components (FileUpload, CodeDisplay, etc.)
 │   │   ├── organisms/      # Complex components (EditorPanel, PreviewPanel)
-│   │   └── templates/      # Page layouts (MainLayout)
+│   │   ├── templates/      # Page layouts (MainLayout)
+│   │   └── ui/             # shadcn/ui primitives (Select, Tabs)
 │   ├── lib/
 │   │   ├── converters.ts   # SVG ↔ JSX conversion logic
 │   │   ├── formatters.ts   # Code formatting utilities
+│   │   ├── optimizer.ts    # SVGO optimization wrapper
 │   │   ├── presets.ts      # Framework preset generators
+│   │   ├── types.ts        # Shared TypeScript types
 │   │   └── utils.ts        # Helper functions
 │   ├── styles/
 │   │   └── prism-theme.css # Syntax highlighting theme
-│   └── main.tsx            # App entry point
+│   └── index.css           # Global styles & Tailwind imports
 ├── public/                  # Static assets
+├── next.config.ts           # Next.js configuration
+├── postcss.config.mjs       # Tailwind CSS v4 PostCSS config
 └── package.json
 ```
 
@@ -223,6 +230,8 @@ SVGX follows the Atomic Design methodology:
 - **Molecules:** Simple component groups (FileUpload, ActionBar, CodeDisplay)
 - **Organisms:** Complex UI sections (EditorPanel, PreviewPanel)
 - **Templates:** Page-level layouts (MainLayout)
+
+All components are React Client Components (`'use client'`) since they rely on browser APIs and React hooks.
 
 ---
 
@@ -237,18 +246,22 @@ npm run dev
 # Build for production
 npm run build
 
-# Preview production build
-npm run preview
+# Start production server
+npm run start
 
+# Lint
+npm run lint
+
+# Format code
+npm run format
+```
 
 ### Code Style
 
 This project uses:
 - **Prettier** for code formatting
-- **ESLint** for linting
+- **ESLint** with `eslint-config-next` for linting
 - **TypeScript** for type safety
-
-All code is automatically formatted on save if you have Prettier configured in your editor.
 
 ---
 
@@ -292,8 +305,8 @@ This project is licensed under the MIT License.
 
 ## Acknowledgments
 
-- Built with [React](https://react.dev/)
-- Powered by [Vite](https://vitejs.dev/)
+- Built with [Next.js](https://nextjs.org/)
+- Powered by [React](https://react.dev/)
 - Styled with [Tailwind CSS](https://tailwindcss.com/)
 - Syntax highlighting by [Prism.js](https://prismjs.com/)
 - Icons from [Lucide](https://lucide.dev/)
@@ -301,5 +314,3 @@ This project is licensed under the MIT License.
 ---
 
 **Made with ❤️ for developers who work with SVGs**
-# svgx
-```

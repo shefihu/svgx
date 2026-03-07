@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useMemo } from 'react';
 import { X, Wand2, RotateCcw } from 'lucide-react';
 import type { UploadedFile } from './BulkFileUpload';

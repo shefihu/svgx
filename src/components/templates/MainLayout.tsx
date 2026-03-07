@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 import { EditorPanel, PreviewPanel } from '@/components/organisms';
 import { BulkFileUpload } from '@/components/molecules/BulkFileUpload';

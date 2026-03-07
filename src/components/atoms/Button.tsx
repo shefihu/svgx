@@ -1,3 +1,5 @@
+'use client';
+
 import { forwardRef } from 'react';
 import type { ButtonHTMLAttributes } from 'react';
 import type { VariantProps } from 'class-variance-authority';

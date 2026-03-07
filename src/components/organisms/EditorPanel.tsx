@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 import type { ChangeEvent, ClipboardEvent } from 'react';
 import { Sparkles } from 'lucide-react';
