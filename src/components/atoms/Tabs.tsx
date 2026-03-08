@@ -1,3 +1,5 @@
+'use client';
+
 import { createContext, useContext } from 'react';
 import type { HTMLAttributes, ButtonHTMLAttributes } from 'react';
 import { cn } from '@/lib/utils';

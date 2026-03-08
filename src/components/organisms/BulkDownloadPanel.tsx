@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 import { Download, Package, Settings, Check } from 'lucide-react';
 import type { UploadedFile } from '@/components/molecules/BulkFileUpload';

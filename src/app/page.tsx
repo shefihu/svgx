@@ -1,7 +1,5 @@
 import { MainLayout } from '@/components/templates';
 
-function App() {
+export default function Home() {
   return <MainLayout />;
 }
-
-export default App;

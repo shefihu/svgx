@@ -1,3 +1,5 @@
+'use client';
+
 import { useRef, useState, useEffect, useCallback } from 'react';
 import type { DragEvent, ChangeEvent, KeyboardEvent } from 'react';
 import {
@@ -327,7 +329,7 @@ export function BulkFileUpload({
           <span className="text-sm font-medium">Paste SVGs from Clipboard</span>
         </button>
         <p className="text-xs text-white/40 mt-2 text-center">
-          Paste one or multiple SVG codes - they'll be automatically detected
+          Paste one or multiple SVG codes - they&apos;ll be automatically detected
         </p>
       </div>
 

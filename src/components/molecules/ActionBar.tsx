@@ -1,3 +1,5 @@
+'use client';
+
 import { Copy, Download } from 'lucide-react';
 import { Button } from '@/components/atoms';
 import { cn } from '@/lib/utils';

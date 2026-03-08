@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useRef } from 'react';
 import type { HTMLAttributes } from 'react';
 import Prism from 'prismjs';

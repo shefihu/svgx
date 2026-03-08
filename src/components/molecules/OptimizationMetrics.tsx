@@ -1,3 +1,5 @@
+'use client';
+
 import { FileText, TrendingDown, Layers } from 'lucide-react';
 import { formatBytes } from '@/lib/optimizer';
 import type { OptimizationResult } from '@/lib/types';
