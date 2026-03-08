@@ -99,27 +99,29 @@ export function MainLayout() {
               SVG Optimization & Conversion Tool
             </p>
           </div>
-          <button
-            onClick={handleModeToggle}
-            className={`
-              flex items-center gap-2 px-4 py-2 rounded border transition-all
-              ${
-                showBulkUpload
-                  ? 'bg-primary/20 border-primary/50 text-primary'
-                  : 'bg-white/5 border-white/10 hover:border-white/30 text-white/80'
-              }
-            `}
-          >
-            <Package className="w-4 h-4" />
-            <span className="text-sm font-medium">
-              {showBulkUpload ? 'Single Mode' : 'Bulk Mode'}
-            </span>
-            {bulkFiles.length > 0 && (
-              <span className="ml-1 px-2 py-0.5 bg-primary text-primary-foreground text-xs rounded-full">
-                {bulkFiles.length}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleModeToggle}
+              className={`
+                flex items-center gap-2 px-4 py-2 rounded border transition-all
+                ${
+                  showBulkUpload
+                    ? 'bg-primary/20 border-primary/50 text-primary'
+                    : 'bg-white/5 border-white/10 hover:border-white/30 text-white/80'
+                }
+              `}
+            >
+              <Package className="w-4 h-4" />
+              <span className="text-sm font-medium">
+                {showBulkUpload ? 'Single Mode' : 'Bulk Mode'}
               </span>
-            )}
-          </button>
+              {bulkFiles.length > 0 && (
+                <span className="ml-1 px-2 py-0.5 bg-primary text-primary-foreground text-xs rounded-full">
+                  {bulkFiles.length}
+                </span>
+              )}
+            </button>
+          </div>
         </div>
       </header>
 
