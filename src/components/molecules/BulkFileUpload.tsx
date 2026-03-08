@@ -13,6 +13,7 @@ import {
   Wand2,
 } from 'lucide-react';
 import { BulkRenameModal } from './BulkRenameModal';
+import { suggestSVGName } from '@/lib/actions';
 
 export interface UploadedFile {
   id: string;
@@ -44,6 +45,8 @@ export function BulkFileUpload({
   const [editingFileName, setEditingFileName] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [showBulkRenameModal, setShowBulkRenameModal] = useState(false);
+  const [isAINaming, setIsAINaming] = useState(false);
+  const [aiNamingProgress, setAiNamingProgress] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const editInputRef = useRef<HTMLInputElement>(null);
 
@@ -233,6 +236,29 @@ export function BulkFileUpload({
     file.file.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const handleAINameAll = async () => {
+    const successFiles = uploadedFiles.filter((f) => f.status === 'success');
+    if (successFiles.length === 0 || isAINaming) return;
+    setIsAINaming(true);
+    setAiNamingProgress(0);
+    let updated = [...uploadedFiles];
+    for (let i = 0; i < successFiles.length; i++) {
+      const file = successFiles[i];
+      try {
+        const name = await suggestSVGName(file.content);
+        const newFileName = `${name}.svg`;
+        const newFile = new File([file.file], newFileName, { type: file.file.type });
+        updated = updated.map((f) => (f.id === file.id ? { ...f, file: newFile } : f));
+        setUploadedFiles([...updated]);
+        onFilesAdded?.([...updated]);
+      } catch {
+        // skip failed files silently
+      }
+      setAiNamingProgress(i + 1);
+    }
+    setIsAINaming(false);
+  };
+
   const handleBulkRenameApply = (updatedFiles: UploadedFile[]) => {
     setUploadedFiles(updatedFiles);
     onFilesAdded?.(updatedFiles);
@@ -397,11 +423,20 @@ export function BulkFileUpload({
               </span>
               <div className="flex items-center gap-2">
                 <button
+                  onClick={handleAINameAll}
+                  disabled={isAINaming}
+                  className="text-sm text-primary hover:text-primary/80 transition-colors flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="AI name all files based on SVG structure"
+                >
+                  <Wand2 className={`w-3 h-3 ${isAINaming ? 'animate-pulse' : ''}`} />
+                  {isAINaming ? `AI Naming… ${aiNamingProgress}/${uploadedFiles.filter((f) => f.status === 'success').length}` : 'AI Name All'}
+                </button>
+                <span className="text-white/20">•</span>
+                <button
                   onClick={() => setShowBulkRenameModal(true)}
                   className="text-sm text-primary hover:text-primary/80 transition-colors flex items-center gap-1"
                   title="Bulk rename all files"
                 >
-                  <Wand2 className="w-3 h-3" />
                   Bulk Rename
                 </button>
                 <span className="text-white/20">•</span>
