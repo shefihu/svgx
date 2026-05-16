@@ -130,7 +130,7 @@ export function PreviewPanel({
     a.href = url;
 
     let extension = '.jsx';
-    if (format === 'html') extension = '.html';
+    if (format === 'html') extension = '.svg';
     else if (format === 'react-ts' || format === 'nextjs') extension = '.tsx';
 
     a.download = `${componentName || 'icon'}${extension}`;

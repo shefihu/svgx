@@ -1,29 +1,36 @@
 import { svgToJsx } from './converters';
 
+const ATTR_VALUE = '(?:"[^"]*"|\'[^\']*\'|\\{[^}]*\\})';
+
+function stripInjectedAttrs(attrs: string): string {
+  return attrs
+    .replace(new RegExp(`\\s*\\bwidth=${ATTR_VALUE}`, 'g'), '')
+    .replace(new RegExp(`\\s*\\bheight=${ATTR_VALUE}`, 'g'), '')
+    .replace(new RegExp(`\\s*\\b(?:class|className)=${ATTR_VALUE}`, 'g'), '')
+    .trim();
+}
+
+function parseSvg(svgCode: string): { attributes: string; content: string } | null {
+  const jsxCode = svgToJsx(svgCode);
+  const match = jsxCode.match(/<svg([\s\S]*?)>([\s\S]*)<\/svg>/);
+  if (!match) return null;
+  return {
+    attributes: stripInjectedAttrs(match[1] || ''),
+    content: match[2] || '',
+  };
+}
+
 export function generateReactJS(
   svgCode: string,
   componentName?: string
 ): string {
   if (!svgCode.trim()) return '';
 
-  // Use provided component name or default to 'Icon'
   const finalName = componentName || 'Icon';
+  const parsed = parseSvg(svgCode);
+  if (!parsed) return '';
 
-  const jsxCode = svgToJsx(svgCode);
-
-  // Extract SVG attributes and content
-  const svgMatch = jsxCode.match(/<svg([^>]*)>([\s\S]*)<\/svg>/);
-  if (!svgMatch) return '';
-
-  let svgAttributes = svgMatch[1] || '';
-  const svgContent = svgMatch[2] || '';
-
-  // Remove width, height, and className from original attributes
-  svgAttributes = svgAttributes
-    .replace(/\s*width="[^"]*"/g, '')
-    .replace(/\s*height="[^"]*"/g, '')
-    .replace(/\s*className="[^"]*"/g, '')
-    .trim();
+  const { attributes: svgAttributes, content: svgContent } = parsed;
 
   return `export const ${finalName} = ({ className, width = 24, height = 24 }) => (
   <svg
@@ -45,24 +52,11 @@ export function generateReactTS(
 ): string {
   if (!svgCode.trim()) return '';
 
-  // Use provided component name or default to 'Icon'
   const finalName = componentName || 'Icon';
+  const parsed = parseSvg(svgCode);
+  if (!parsed) return '';
 
-  const jsxCode = svgToJsx(svgCode);
-
-  // Extract SVG attributes and content
-  const svgMatch = jsxCode.match(/<svg([^>]*)>([\s\S]*)<\/svg>/);
-  if (!svgMatch) return '';
-
-  let svgAttributes = svgMatch[1] || '';
-  const svgContent = svgMatch[2] || '';
-
-  // Remove width, height, and className from original attributes
-  svgAttributes = svgAttributes
-    .replace(/\s*width="[^"]*"/g, '')
-    .replace(/\s*height="[^"]*"/g, '')
-    .replace(/\s*className="[^"]*"/g, '')
-    .trim();
+  const { attributes: svgAttributes, content: svgContent } = parsed;
 
   return `interface ${finalName}Props {
   className?: string;
@@ -94,24 +88,11 @@ export function generateNextJS(
 ): string {
   if (!svgCode.trim()) return '';
 
-  // Use provided component name or default to 'Icon'
   const finalName = componentName || 'Icon';
+  const parsed = parseSvg(svgCode);
+  if (!parsed) return '';
 
-  const jsxCode = svgToJsx(svgCode);
-
-  // Extract SVG attributes and content
-  const svgMatch = jsxCode.match(/<svg([^>]*)>([\s\S]*)<\/svg>/);
-  if (!svgMatch) return '';
-
-  let svgAttributes = svgMatch[1] || '';
-  const svgContent = svgMatch[2] || '';
-
-  // Remove width, height, and className from original attributes
-  svgAttributes = svgAttributes
-    .replace(/\s*width="[^"]*"/g, '')
-    .replace(/\s*height="[^"]*"/g, '')
-    .replace(/\s*className="[^"]*"/g, '')
-    .trim();
+  const { attributes: svgAttributes, content: svgContent } = parsed;
 
   return `'use client';
 
